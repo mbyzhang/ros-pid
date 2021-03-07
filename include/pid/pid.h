@@ -70,6 +70,7 @@ private:
   // Primary PID controller input variables
   double plant_state_;               // current output of plant
   bool pid_enabled_ = true;          // PID is enabled to run
+  bool always_publish_ = false;      // Publish control effort of zero when disabled
   bool new_state_or_setpt_ = false;  // Indicate that fresh calculations need to be run
   double setpoint_ = 0;              // desired output of plant
 

@@ -31,6 +31,8 @@ PidObject::PidObject() : error_(3, 0), filtered_error_(3, 0), error_deriv_(3, 0)
   node_priv.param<double>("min_loop_frequency", min_loop_frequency_, 1000.0);
   node_priv.param<std::string>("pid_debug_topic", pid_debug_pub_name_, "pid_debug");
   node_priv.param<double>("setpoint_timeout", setpoint_timeout_, -1.0);
+  node_priv.param<bool>("always_publish", always_publish_, false);
+
   ROS_ASSERT_MSG(setpoint_timeout_ ==-1 || setpoint_timeout_ > 0, 
                  "setpoint_timeout set to %.2f but needs to -1 or >0", setpoint_timeout_);
 
@@ -309,6 +311,10 @@ void PidObject::doCalcs()
       std_msgs::Float64MultiArray pidDebugMsg;
       pidDebugMsg.data = pid_debug_vect;
       pid_debug_pub_.publish(pidDebugMsg);
+    }
+    else if (always_publish_) {
+      control_msg_.data = 0.0;
+      control_effort_pub_.publish(control_msg_);
     }
     else if (setpoint_timeout_ > 0 && (ros::Time::now() - last_setpoint_msg_time_).toSec() > setpoint_timeout_)
     {
